@@ -9,8 +9,10 @@ E também tem o intuito de aprendizado do uso da linguagem Python junto com mysql
 Diário de bordo
 
 - 17/01/2019
-	Foi estruturado o projeto(ideia inicial).
-	Começou e foi finalizado a parte de crud e funcionarios.
+	- Foi estruturado o projeto(ideia inicial).
+	- Implementado o crud de funcionarios.
 
 - 18/01/2019
+	- Implementado alguns relatorios de funcionarios.
+	- Implementado tratamento de erros nas entradas de dados.
 	 
