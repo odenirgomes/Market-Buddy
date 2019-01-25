@@ -15,4 +15,9 @@ Diário de bordo
 - 18/01/2019
 	- Implementado alguns relatorios de funcionarios.
 	- Implementado tratamento de erros nas entradas de dados.
+
+- 24/01/2019
+	- Atualização no banco de dados.
+	- Atualização no crudFuncionarios.
+	- Implementado crudClientes.
 	 

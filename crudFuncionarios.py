@@ -10,6 +10,7 @@
 #-------------------------------------------------------------------------------
 import mysql.connector
 from mysql.connector import Error
+import string
 
 #Conecta ao servidor do MySQL no host local(localhost)
 def connect():
@@ -33,13 +34,14 @@ def init_server():
     mycursor = conn.cursor()
 
     try:
-        mycursor.execute('use mysqlbd002;')
+        mycursor.execute('use mbdatabase;')
+        mycursor.execute('create table if not exists funcionarios (cod_func int not null auto_increment, nome varchar(20) not null, snome varchar(20) not null, sexo enum("M", "F"), cargo varchar(20), salario decimal(8,2), primary key(cod_func));')
 
     except Error as e1:
-        mycursor.execute('create database if not exists mysqlbd002 default character set utf8 default collate utf8_general_ci;')
-        mycursor.execute('use mysqlbd002;')
+        mycursor.execute('create database if not exists mbdatabase default character set utf8 default collate utf8_general_ci;')
+        mycursor.execute('use mbdatabase;')
 
-        mycursor.execute('create table funcionarios (cod_func int not null auto_increment, nome_func varchar(20) not null, snome_func varchar(20) not null, sexo_func enum("M", "F"), cargo_func varchar(20), salario_func decimal(8,2), primary key(cod_func));')
+        mycursor.execute('create table funcionarios (cod_func int not null auto_increment, nome varchar(20) not null, snome varchar(20) not null, sexo enum("M", "F"), cargo varchar(20), salario decimal(8,2), primary key(cod_func));')
 
     conn.close()
 
@@ -48,11 +50,21 @@ def cadastrar_func():
     # Conecção com o servidor de BD e a criação de um curso para executar comandos em sql
     conn = connect()
     mycursor = conn.cursor()
-    mycursor.execute('use mysqlbd002;')
+    mycursor.execute('use mbdatabase;')
 
     print("\nCadastrar Funcionario: ")
-    nome = input("Nome: ")
-    snome = input("Sobrenome: ")
+
+    try:
+        nome = input("Nome: ")
+    except:
+        print("Erro na entrada!!")
+        cadastrar_func()
+
+    try:
+        snome = input("Sobrenome: ")
+    except:
+        print("Erro na entrada!!")
+        cadastrar_func()
 
     sexo = input("Sexo: Masc<M> ou Femi<F>: ")
     sexo = sexo.upper()
@@ -61,7 +73,11 @@ def cadastrar_func():
         print("Entre com o valor certo do sexo!")
         cadastrar_func()
 
-    cargo = input("Cargo: ")
+    try:
+        cargo = input("Cargo: ")
+    except:
+        print("Erro na entrada!!")
+        cadastrar_func()
 
     try:
         salario = float(input("Salario: "))
@@ -73,7 +89,7 @@ def cadastrar_func():
 
     salario = str(salario)
 
-    mycursor.execute("INSERT INTO funcionarios (nome_func, snome_func, sexo_func, cargo_func, salario_func) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}');" .format(nome, snome, sexo, cargo, salario))
+    mycursor.execute("INSERT INTO funcionarios (nome, snome, sexo, cargo, salario) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}');" .format(nome, snome, sexo, cargo, salario))
     #Execução do comando de insert no BD
     conn.commit()
     print("Registro cadastrado!")
@@ -87,7 +103,7 @@ def listar_func():
     print("\nListar funcionarios:")
     conn = connect()
     mycursor = conn.cursor()
-    mycursor.execute('use mysqlbd002;')
+    mycursor.execute('use mbdatabase;')
 
     mycursor.execute('select * from funcionarios;')
     myresult = mycursor.fetchall()
@@ -100,12 +116,12 @@ def listar_func():
 
 def deletar_func():
 
-    print("\nDeletar funcionario:")
-    listar_func()
-
     conn = connect()
     mycursor = conn.cursor()
-    mycursor.execute('use mysqlbd002;')
+    mycursor.execute('use mbdatabase;')
+
+    print("\nDeletar funcionario:")
+    listar_func()
 
     try:
         id = int(input("Entre com o codigo do funcionario que deseja deletar: "))
@@ -136,12 +152,12 @@ def deletar_func():
 
 def alterar_func():
 
-    print("\nAlterar funcionario:")
-    listar_func()
-
     conn = connect()
     mycursor = conn.cursor()
-    mycursor.execute('use mysqlbd002;')
+    mycursor.execute('use mbdatabase;')
+
+    print("\nAlterar funcionario:")
+    listar_func()
 
     try:
         id = int(input("Entre com o codigo do funcionario que deseja alterar: "))
@@ -154,42 +170,51 @@ def alterar_func():
     myresult = mycursor.fetchall()
     print("Registro selecionado ->", myresult)
 
-    nome = input("Nome: ")
-    snome = input("Sobrenome: ")
-    sexo = input("Sexo: Masc<M> ou Femi<F>: ")
-
-    sexo.upper()
-    if sexo != 'M' and sexo != 'F':
-        print("\nEntrada invalida!!!")
-        print("Entre com o valor certo do sexo!")
-        cadastrar_func()
-
-    cargo = input("Cargo: ")
+    try:
+        nome = input("Nome: ")
+    except:
+        print("Erro na entrada!!")
+        alterar_func()
 
     try:
-        salario = float(input("Salario: "))
-
+        snome = input("Sobrenome: ")
     except:
-        print("\nEntrada invalida!!!")
-        print("Entre com o tipo correto de salario!")
-        cadastrar_func()
+        print("Erro na entrada!!")
+        alterar_func()
 
-    salario = str(salario)
+    sexo = input("Sexo: Masc<M> ou Femi<F>: ")
+    sexo.upper()
+    if sexo != 'M' and sexo != 'F' and sexo != "":
+        print("\nEntrada invalida!!!")
+        print("Entre com o valor certo do sexo!")
+        alterar_func()
+
+    try:
+        cargo = input("Cargo: ")
+    except:
+        print("Erro na entrada!!")
+        alterar_func()
+
+
+    salario = input("Salario: ")
+    if salario in string.ascii_letters and salario != '':
+        print("Tipo de entrada invalida!!!")
+        alterar_func()
 
     if nome != "":
-        mycursor.execute("update funcionarios set nome_func = '{0}' where cod_func = '{1}';" .format(nome, id))
+        mycursor.execute("update funcionarios set nome = '{0}' where cod_func = '{1}';" .format(nome, id))
 
     if snome != "":
-        mycursor.execute("update funcionarios set snome_func = '{0}' where cod_func = '{1}';" .format(snome, id))
+        mycursor.execute("update funcionarios set snome = '{0}' where cod_func = '{1}';" .format(snome, id))
 
     if sexo != "":
-        mycursor.execute("update funcionarios set sexo_func = '{0}' where cod_func = '{1}';" .format(sexo, id))
+        mycursor.execute("update funcionarios set sexo = '{0}' where cod_func = '{1}';" .format(sexo, id))
 
     if cargo != "":
-        mycursor.execute("update funcionarios set cargo_func = '{0}' where cod_func = '{1}';" .format(cargo, id))
+        mycursor.execute("update funcionarios set cargo = '{0}' where cod_func = '{1}';" .format(cargo, id))
 
     if salario != "":
-        mycursor.execute("update funcionarios set salario_func = '{0}' where cod_func = '{1}';" .format(salario, id))
+        mycursor.execute("update funcionarios set salario = '{0}' where cod_func = '{1}';" .format(salario, id))
 
     conn.commit()
     conn.close()
@@ -199,7 +224,7 @@ def quant_func():
 
     conn = connect()
     mycursor = conn.cursor()
-    mycursor.execute('use mysqlbd002;')
+    mycursor.execute('use mbdatabase;')
 
     mycursor.execute('select count(*) from funcionarios;')
     myresult = mycursor.fetchone()
@@ -207,13 +232,14 @@ def quant_func():
 
     conn.close()
 
+
 def quantGastaSalario_func():
 
     conn = connect()
     mycursor = conn.cursor()
-    mycursor.execute('use mysqlbd002;')
+    mycursor.execute('use mbdatabase;')
 
-    mycursor.execute('select sum(salario_func) from funcionarios;')
+    mycursor.execute('select sum(salario) from funcionarios;')
     myresult = mycursor.fetchone()
     print("\nQuantidade gasta em salarios: ", myresult[0])
 
@@ -224,12 +250,17 @@ def buscaCargo():
 
     conn = connect()
     mycursor = conn.cursor()
-    mycursor.execute('use mysqlbd002;')
+    mycursor.execute('use mbdatabase;')
 
     print("\nBuscar funcionarios pelo cargo:")
-    query = input("Entre com o cargo: ")
 
-    mycursor.execute("select * from funcionarios where cargo_func = '{0}';" .format(query))
+    try:
+        query = input("Entre com o cargo: ")
+    except:
+        print("Erro na entrada!!")
+        buscaCargo()
+
+    mycursor.execute("select * from funcionarios where cargo = '{0}';" .format(query))
     myresult = mycursor.fetchall()
 
     for r in myresult:
@@ -242,12 +273,17 @@ def buscaNome():
 
     conn = connect()
     mycursor = conn.cursor()
-    mycursor.execute('use mysqlbd002;')
+    mycursor.execute('use mbdatabase;')
 
     print("\nBuscar funcionarios pelo nome:")
-    query = input("Entre com o nome: ")
 
-    mycursor.execute("select * from funcionarios where nome_func = '{0}';" .format(query))
+    try:
+        query = input("Entre com o cargo: ")
+    except:
+        print("Erro na entrada!!")
+        buscaNome()
+
+    mycursor.execute("select * from funcionarios where nome = '{0}';" .format(query))
     myresult = mycursor.fetchall()
 
     for r in myresult:
@@ -255,11 +291,12 @@ def buscaNome():
 
     conn.close()
 
+
 def buscaSexo():
 
     conn = connect()
     mycursor = conn.cursor()
-    mycursor.execute('use mysqlbd002;')
+    mycursor.execute('use mbdatabase;')
 
     print("\nBuscar funcionarios pelo sexo:")
     print("Entre com o sexo: ")
@@ -267,7 +304,7 @@ def buscaSexo():
     query = query.upper()
 
     if query == 'M' or query == 'F':
-        mycursor.execute("select * from funcionarios where sexo_func = '{0}';" .format(query))
+        mycursor.execute("select * from funcionarios where sexo = '{0}';" .format(query))
         myresult = mycursor.fetchall()
 
         for r in myresult:
@@ -278,10 +315,11 @@ def buscaSexo():
 
     conn.close()
 
+
 def menuRelatorios_func():
 
     while True:
-        print('\nMenu de relatorios de funcionarios.')
+        print('\nRelatorios:')
         print('1. Quantidade de funcioanrios.')
         print('2. Quantidade gasta em salarios.')
         print('3. Buscar funcionarios por cargo.')
@@ -289,7 +327,13 @@ def menuRelatorios_func():
         print('5. Buscar funcionarios pelo sexo.')
         print('0. Sair')
 
-        OPCAO = int(input("Entre com a opcao: "))
+        try:
+            OPCAO = int(input("Entre com a opcao: "))
+
+        except:
+            print("Entrada invalida!!")
+            menuRelatorios_func()
+
         if OPCAO == 1:
             quant_func()
 
@@ -309,18 +353,20 @@ def menuRelatorios_func():
         else:
             print("Entrada invalida!!!")
 
+
 def menu_func():
 
     while True:
-        print('\nMenu')
-        print('1. Cadastar funcionario.')
-        print('2. Listar funcionarios.')
-        print('3. Deletar funcionario.')
-        print('4. Alterar funcionario.')
-        print('5. Menu Relatorios.')
+        print('\nMenu dos Funcionarios:')
+        print('1. Cadastar.')
+        print('2. Listar.')
+        print('3. Deletar.')
+        print('4. Alterar.')
+        print('5. Relatorios.')
         print('0. Sair.')
 
         OPCAO = int(input("Entre com a opcao: "))
+
         if OPCAO == 1:
             cadastrar_func()
 
@@ -341,6 +387,7 @@ def menu_func():
 
         else:
             print("Entrada Invalida!!!")
+
 
 def main():
 
