@@ -40,7 +40,6 @@ def init_server():
     except Error as e1:
         mycursor.execute('create database if not exists mbdatabase default character set utf8 default collate utf8_general_ci;')
         mycursor.execute('use mbdatabase;')
-
         mycursor.execute('create table funcionarios (cod_func int not null auto_increment, nome varchar(20) not null, snome varchar(20) not null, sexo enum("M", "F"), cargo varchar(20), salario decimal(8,2), primary key(cod_func));')
 
     conn.close()
@@ -246,72 +245,55 @@ def quantGastaSalario_func():
     conn.close()
 
 
-def buscaCargo():
+def buscar_func():
 
     conn = connect()
     mycursor = conn.cursor()
     mycursor.execute('use mbdatabase;')
 
-    print("\nBuscar funcionarios pelo cargo:")
+    print("Buscar funcioanrios: ")
+    print("1. Nome.")
+    print("2. Sobrenome.")
+    print("3. Sexo")
+    print("4. Cargo.")
+    print("5. Salario.")
 
-    try:
-        query = input("Entre com o cargo: ")
-    except:
-        print("Erro na entrada!!")
-        buscaCargo()
+    OPCAO = int(input("Deseja buscar funcionario pelo: "))
+    if OPCAO == 1:
+        OPCAO = 'nome'
 
-    mycursor.execute("select * from funcionarios where cargo = '{0}';" .format(query))
-    myresult = mycursor.fetchall()
+    elif OPCAO == 2:
+        OPCAO = 'snome'
 
-    for r in myresult:
-        print(r)
+    elif OPCAO == 3:
+        OPCAO = 'sexo'
 
-    conn.close()
+    elif OPCAO == 4:
+        OPCAO = 'cargo'
 
-
-def buscaNome():
-
-    conn = connect()
-    mycursor = conn.cursor()
-    mycursor.execute('use mbdatabase;')
-
-    print("\nBuscar funcionarios pelo nome:")
-
-    try:
-        query = input("Entre com o cargo: ")
-    except:
-        print("Erro na entrada!!")
-        buscaNome()
-
-    mycursor.execute("select * from funcionarios where nome = '{0}';" .format(query))
-    myresult = mycursor.fetchall()
-
-    for r in myresult:
-        print(r)
-
-    conn.close()
-
-
-def buscaSexo():
-
-    conn = connect()
-    mycursor = conn.cursor()
-    mycursor.execute('use mbdatabase;')
-
-    print("\nBuscar funcionarios pelo sexo:")
-    print("Entre com o sexo: ")
-    query = input("Masc<M> ou Femi<F>: ")
-    query = query.upper()
-
-    if query == 'M' or query == 'F':
-        mycursor.execute("select * from funcionarios where sexo = '{0}';" .format(query))
-        myresult = mycursor.fetchall()
-
-        for r in myresult:
-            print(r)
+    elif OPCAO == 5:
+        OPCAO = 'salario'
 
     else:
-        print("Entrada invalida!!!")
+        print("Entrada invalida!!")
+        buscar_func()
+
+    try:
+        query = input("Pesquisar: ")
+    except:
+        print("Erro de entrada!!")
+        buscar_func()
+
+    try:
+        mycursor.execute("select * from funcionarios where {0} = '{1}';" .format(OPCAO, query))
+    except:
+        print("Erro de pesquisa!!")
+        buscar_func()
+
+    myresult = mycursor.fetchall()
+
+    for r in myresult:
+        print(r)
 
     conn.close()
 
@@ -319,12 +301,11 @@ def buscaSexo():
 def menuRelatorios_func():
 
     while True:
-        print('\nRelatorios:')
+        print('\nFuncionarios')
+        print('Menu Relatorios:')
         print('1. Quantidade de funcioanrios.')
         print('2. Quantidade gasta em salarios.')
-        print('3. Buscar funcionarios por cargo.')
-        print('4. Buscar funcionarios pelo nome.')
-        print('5. Buscar funcionarios pelo sexo.')
+        print('3. Buscar funcionarios.')
         print('0. Sair')
 
         try:
@@ -341,13 +322,8 @@ def menuRelatorios_func():
             quantGastaSalario_func()
 
         elif OPCAO == 3:
-            buscaCargo()
+            buscar_func()
 
-        elif OPCAO == 4:
-            buscaNome()
-
-        elif OPCAO == 5:
-            buscaSexo()
         elif OPCAO == 0:
             break
         else:

@@ -20,4 +20,9 @@ Diário de bordo
 	- Atualização no banco de dados.
 	- Atualização no crudFuncionarios.
 	- Implementado crudClientes.
+
+- 28/01/2019
+	- Atualização na pesquisa dos funcionarios.
+	- Implemantado pesquisa e relatorios no crudClientes.
+
 	 

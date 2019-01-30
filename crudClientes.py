@@ -41,7 +41,6 @@ def init_server():
     except Error as e1:
         mycursor.execute('create database if not exists mysqlbd002 default character set utf8 default collate utf8_general_ci;')
         mycursor.execute('use mbdatabase;')
-
         mycursor.execute('create table if not exists clientes (cod_cliente int not null auto_increment, nome varchar(20) not null, snome varchar(20) not null, sexo enum("M", "F"), tel varchar(15), endereco varchar(50), primary key(cod_cliente));')
 
     conn.close()
@@ -221,6 +220,97 @@ def alterar_cliente():
     conn.commit()
     conn.close()
 
+def buscar_clientes():
+
+    conn = connect()
+    mycursor = conn.cursor()
+    mycursor.execute('use mbdatabase;')
+
+    print("Buscar clientes:")
+    print("1. Nome.")
+    print("2. Sobrenome.")
+    print("3. Sexo.")
+    print("4. Telefone.")
+    print("5. Endereço.")
+
+    OPCAO = int(input("Deseja buscar cliente pelo: "))
+    if OPCAO == 1:
+        OPCAO = "nome"
+
+    elif OPCAO == 2:
+        OPCAO = "snome"
+
+    elif OPCAO == 3:
+        OPCAO = "sexo"
+
+    elif OPCAO == 4:
+        OPCAO = "tel"
+
+    elif OPCAO == 5:
+        OPCAO = "endereco"
+
+    else:
+        print("Entrada invalida!!")
+        buscar_clientes()
+
+    try:
+        query = input("Pesquisar: ")
+    except:
+        print("Erro de entrada!!")
+        buscar_clientes()
+
+    try:
+        mycursor.execute("select * from clientes where {0} = '{1}';" .format(OPCAO, query))
+    except:
+        print("Erro na pesquisa!!")
+        buscar_clientes()
+
+    myresult = mycursor.fetchall()
+
+    for r in myresult:
+        print(r)
+
+    conn.close()
+
+def quant_clientes():
+
+    conn = connect()
+    mycursor = conn.cursor()
+    mycursor.execute("use mbdatabase;")
+
+    mycursor.execute("select count(*) from clientes;")
+    myresult = mycursor.fetchone()
+
+    print("Quantidade de clientes -> {0}" .format(myresult[0]))
+
+    conn.close()
+
+def menuRelatorios_clientes():
+
+    while True:
+        print("\nClientes")
+        print("Menu Relatorios:")
+        print("1. Buscar clientes.")
+        print("2. Quantidade de clientes.")
+        print("0. Sair")
+
+        try:
+            OPCAO = int(input("Entre com a opcao: "))
+        except:
+            print("Erro na entrada!!")
+            menuRelatorios_clientes()
+
+        if OPCAO == 1:
+            buscar_clientes()
+
+        elif OPCAO == 2:
+            quant_clientes()
+
+        elif OPCAO == 0:
+            break
+
+        else:
+            print("Entrada invalida!!")
 
 def menu_clientes():
 
@@ -233,7 +323,12 @@ def menu_clientes():
         print("5. Relatorios.")
         print("0. Sair.")
 
-        OPCAO = int(input("Entre com a opcao: "))
+        try:
+            OPCAO = int(input("Entre com a opcao: "))
+        except:
+            print("Erro na entrada!!")
+            menu_clientes()
+
         if OPCAO == 1:
             cadastrar_cliente()
 
@@ -247,7 +342,8 @@ def menu_clientes():
             alterar_cliente()
 
         elif OPCAO == 5:
-            pass
+            menuRelatorios_clientes()
+
         elif OPCAO == 0:
             break
 
