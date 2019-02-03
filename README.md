@@ -23,6 +23,9 @@ Diário de bordo
 
 - 28/01/2019
 	- Atualização na pesquisa dos funcionarios.
-	- Implemantado pesquisa e relatorios no crudClientes.
+	- Implementado pesquisa e relatorios no crudClientes.
 
+- 03/02/2019
+	- Atualização no codigos fonte.
+	- Implementado crudProdutos.
 	 
