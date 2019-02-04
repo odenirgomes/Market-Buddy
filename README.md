@@ -28,4 +28,6 @@ Diário de bordo
 - 03/02/2019
 	- Atualização no codigos fonte.
 	- Implementado crudProdutos.
-	 
+	
+- 04/02/2019
+	- MatheusLima619 entrou no projeto.
